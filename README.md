@@ -325,24 +325,24 @@ VISUAL ODOMETRY EVALUATION RESULTS
 ================================================================================
 
 Ground Truth: RTK trajectory (1,955 poses)
-Estimated:    ORB-SLAM3 camera trajectory (2,826 poses)
-Matched Poses: 1,701 / 1,955 (87.01%)  ← Completeness
+Estimated:    ORB-SLAM3 camera trajectory (2,955 poses)
+Matched Poses: 1,630 / 1,955 (83.38%)  ← Completeness
 
 METRIC 1: ATE (Absolute Trajectory Error)
 ────────────────────────────────────────
-RMSE:   132.1547 m
-Mean:   114.6344 m
-Std:    65.7558 m
+RMSE:   109.0235 m
+Mean:   92.5584 m
+Std:    57.6114 m
 
 METRIC 2: RPE Translation Drift (distance-based, delta=10 m)
 ────────────────────────────────────────
-Mean translational RPE over 10 m: 28.7014 m
-Translation drift rate:           2.8701 m/m
+Mean translational RPE over 10 m: 22.33655 m
+Translation drift rate:           2.233655 m/m
 
 METRIC 3: RPE Rotation Drift (distance-based, delta=10 m)
 ────────────────────────────────────────
-Mean rotational RPE over 10 m: 17.3332 deg
-Rotation drift rate:        173.3319 deg/100m
+Mean rotational RPE over 10 m: 12.6538762 deg
+Rotation drift rate:        126.538762 deg/100m
 
 ================================================================================
 ```
@@ -351,27 +351,29 @@ Rotation drift rate:        173.3319 deg/100m
 
 | Parameter | Value |
 |-----------|-------|
-| **Sim(3) scale correction** | 6.5944 |
-| **Sim(3) translation** | [-45.426, -95.559, 36.060] m |
+| **Sim(3) scale correction** | 0.8619|
+| **Sim(3) translation** | [-66.897, -73.606, 46.064] m |
 | **Association threshold** | \(t_{max\_diff}\) = 0.1 s |
-| **Association rate (Completeness)** | 87.01% |
+| **Association rate (Completeness)** | 83.38% |
 
 ### Performance Analysis
 
 | Metric | Value | Grade | Interpretation |
 |--------|-------|-------|----------------|
-| **ATE RMSE** | 132.15 m | F | Very large global error after alignment |
-| **RPE Trans Drift** | 2.87 m/m | D | Large local drift per traveled distance |
-| **RPE Rot Drift** | 173.33 deg/100m | F | Severe orientation drift |
-| **Completeness** | 87.01% | B | Many poses can be evaluated, but accuracy is low |
+| **ATE RMSE** | 109.023524 m | E | Large global error after alignment |
+| **RPE Trans Drift** | 2.233655 m/m | C | Moderate local drift per traveled distance |
+| **RPE Rot Drift** | 126.538762 deg/100m | D | Significant orientation drift |
+| **Completeness** | 83.38% | C | Many poses can be evaluated, but accuracy is very low |
 
 ---
 
 ## 📊 Visualizations
-
+ 
 ### Trajectory Comparison
 
-![Trajectory Evaluation](figures/trajectory_evaluation.png)
+
+<img width="2400" height="2400" alt="df05d1439c88fb5a8eb44a475ec496ef" src="https://github.com/user-attachments/assets/b41909a9-8cea-493a-9b50-1da7e178a41e" />
+
 
 This figure is generated from the same inputs used for evaluation (`ground_truth.txt` and `CameraTrajectory.txt`) and includes:
 
@@ -388,23 +390,23 @@ This figure is generated from the same inputs used for evaluation (`ground_truth
 
 ### Strengths
 
-1. **High evaluation coverage**: 87% completeness indicates that a large portion of the ground-truth poses can be associated and evaluated.
+1. **High evaluation coverage**: 83.38% completeness indicates that a large portion of the ground-truth poses can be associated and evaluated ( 1630/1955 matched ).
 
 2. **End-to-end pipeline**: The system produces a usable TUM trajectory and can be evaluated reproducibly with standard tooling.
 
 ### Limitations
 
-1. **Tracking Instability**: Frequent "Fail to track local map!" errors observed, leading to multiple map resets (2 maps created).
+1. **Tracking Instability**: Occasional "Fail to track local map!" errors observed, which may lead to map resets during challenging segmengts.
 
-2. **Large drift**: Both translation and rotation drift rates are high, indicating unstable local tracking and/or poor geometric constraints.
+2. **Moderate drift**: Translation drift (2.23 m/m) and rotation drift (126.54 deg/100m) indicate room for improvement, indicating unstable local tracking and/or poor geometric constraints.
 
-3. **No loop closure**: Pure VO mode without loop closure or relocalization accumulates drift over long trajectories.
+3. **No loop closure**: Pure VO mode without loop closure or relocalization accumulates drift over long trajectories.(~1.9km)
 
 ### Error Sources
 
 1. **Fast UAV Motion**: Aggressive flight maneuvers cause motion blur and large inter-frame displacements.
 
-2. **Feature Extraction**: Default ORB parameters (1500 features) may be insufficient for high-resolution images.
+2. **Feature Extraction**: Default ORB parameters (1500 features) may be insufficient for high-resolution images.(2448*2048)
 
 3. **Calibration Accuracy**: Camera intrinsics and distortion parameters affect pose estimation quality.
 
@@ -414,10 +416,10 @@ This figure is generated from the same inputs used for evaluation (`ground_truth
 
 This assignment demonstrates monocular Visual Odometry implementation using ORB-SLAM3 on UAV aerial imagery. Key findings:
 
-1. ✅ **System Operation**: ORB-SLAM3 successfully processes 3,833 images over 1.9 km trajectory
-2. ✅ **Evaluation coverage**: 87.01% completeness shows that many poses can be evaluated against RTK ground truth
-3. ⚠️ **Tracking stability**: Frequent tracking failures indicate the need for parameter tuning and stronger robustness measures
-4. ❌ **Accuracy**: The current baseline exhibits very large global error and drift rates on this sequence
+1. ✅ **System Operation**: ORB-SLAM3 successfully processes 2,955 camera poses over 1.9 km trajectory
+2. ✅ **Evaluation coverage**: 83.38% completeness shows that many poses can be evaluated against RTK ground truth
+3. ⚠️ **Tracking stability**: Occasional tracking failures indicate the need for parameter tuning and stronger robustness measures
+4. ⚠️ **Accuracy**: The current baseline exhibits large global error (ATE 109.02 m) and moderate drift rates on this sequence
 
 ### Recommendations for Improvement
 
@@ -490,6 +492,15 @@ python3 scripts/evaluate_vo_accuracy.py \
     --workdir evaluation_results \
     --json-out evaluation_results/metrics.json
 ```
+### C. Output Trajectory Format (TUM)
+
+```
+# timestamp x y z qx qy qz qw
+1698132964.499888 0.0000000 0.0000000 0.0000000 -0.0000000 -0.0000000 -0.0000000 1.0000000
+1698132964.599976 -0.0198950 0.0163751 -0.0965251 -0.0048082 0.0122335 0.0013237 0.9999127
+...
+```
+
 
 ### D. Native evo Commands (Recommended)
 
@@ -516,14 +527,7 @@ evo_rpe tum ground_truth.txt CameraTrajectory.txt \
   --pose_relation angle_deg -va
 ```
 
-### C. Output Trajectory Format (TUM)
 
-```
-# timestamp x y z qx qy qz qw
-1698132964.499888 0.0000000 0.0000000 0.0000000 -0.0000000 -0.0000000 -0.0000000 1.0000000
-1698132964.599976 -0.0198950 0.0163751 -0.0965251 -0.0048082 0.0122335 0.0013237 0.9999127
-...
-```
 
 ---
 
