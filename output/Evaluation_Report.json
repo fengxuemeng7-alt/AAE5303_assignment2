@@ -1,0 +1,54 @@
+{
+    "evaluation_summary": {
+        "dataset": "HKisland_GNSS03",
+        "source": "MARS-LVIG / UAVScenes",
+        "total_images": 2955,
+        "keyframes_output": 457,
+        "ground_truth_poses": 1955,
+        "matched_poses": 1630,
+        "association_rate": 83.38,
+        "trajectory_length_m": 1901.88,
+        "duration_s": 390.78
+    },
+    "metrics": {
+        "ate": {
+            "rmse": 109.0235,
+            "mean": 92.5584,
+            "median": 82.4323,
+            "std": 57.6114,
+            "min": 8.5727,
+            "max": 273.8506,
+            "unit": "meters"
+        },
+        "rpe": {
+            "trans_rmse": 46.9582,
+            "trans_mean": 22.3366,
+            "trans_median": 16.1615,
+            "trans_std": 41.3055,
+            "rot_mean_deg": 12.6539,
+            "rot_rmse_deg": 26.5644,
+            "delta_m": 10,
+            "unit": "meters"
+        },
+        "scale_error": {
+            "scale_ratio": 0.8619,
+            "scale_drift_percent": 13.81,
+            "unit": "percentage"
+        }
+    },
+    "alignment": {
+        "method": "Sim(3)",
+        "estimated_scale": 0.8619,
+        "translation": [-66.897, -73.606, 46.064]
+    },
+    "baseline_config": {
+        "framework": "ORB-SLAM3",
+        "mode": "Monocular Visual Odometry",
+        "trajectory_source": "CameraTrajectory.txt",
+        "nFeatures": 1500,
+        "nLevels": 8,
+        "scaleFactor": 1.2,
+        "iniThFAST": 20,
+        "minThFAST": 7
+    }
+}
